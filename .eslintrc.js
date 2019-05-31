@@ -1,7 +1,11 @@
 module.exports = {
-  extends: ['eslint:recommended', 'plugin:prettier/recommended'],
+  extends: [
+    'eslint:recommended',
+    'plugin:prettier/recommended',
+    'plugin:react/recommended',
+  ],
   parser: 'babel-eslint',
-  plugins: ['react-hooks', 'typescript', 'prettier', 'import', 'react'],
+  plugins: ['react-hooks', 'typescript', 'prettier', 'import'],
   parserOptions: {
     ecmaVersion: 8,
     sourceType: 'module',
@@ -50,30 +54,6 @@ module.exports = {
     'react/jsx-one-expression-per-line': 'off',
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
-    'typescript/adjacent-overload-signatures': 'error',
-    'typescript/class-name-casing': 'error',
-    'typescript/explicit-member-accessibility': 'off',
-    'typescript/interface-name-prefix': 'off',
-    'typescript/no-angle-bracket-type-assertion': 'error',
-    'typescript/no-array-constructor': 'error',
-    'typescript/no-empty-interface': 'error',
-    'typescript/no-inferrable-types': 'error',
-    'typescript/no-namespace': 'error',
-    'typescript/no-non-null-assertion': 'error',
-    'typescript/no-parameter-properties': 'error',
-    'typescript/no-triple-slash-reference': 'error',
-    'typescript/no-unused-vars': 'error',
-    'typescript/no-use-before-define': 'error',
-    'typescript/type-annotation-spacing': 'error',
-    'typescript/explicit-function-return-type': [
-      'warn',
-      { allowExpressions: true },
-    ],
-    'typescript/member-delimiter-style': [
-      'error',
-      { delimiter: 'semi', requireLast: true, ignoreSingleLine: false },
-    ],
-    'typescript/member-naming': ['error', { private: '^_' }],
   },
   overrides: [
     {
