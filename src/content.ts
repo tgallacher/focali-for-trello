@@ -3,14 +3,14 @@
 
 // Trello css classnames
 const TRELLO_CLASSNAME__LIST_WRAPPER = '#board .js-list';
-const TRELLO_CLASSNAME__LIST_HEADER_WRAPPER = '.js-list-header';
+// const TRELLO_CLASSNAME__LIST_HEADER_WRAPPER = '.js-list-header';
 const TRELLO_CLASSNAME__LIST_HEADER_NAME = '.js-list-name-assist';
 const TRELLO_CLASSNAME__LIST_CONTENT_WRAPPER = '.js-list-content';
 
 // Trello's list color hex: '#dfe1e6';
 const LIST_BG_COLOR = '#333';
 
-chrome.storage.local.clear();
+// chrome.storage.local.clear();
 
 /**
  * Create an element to sit behind lists so we don't see
@@ -30,22 +30,6 @@ const createBackplateElement = () => {
   return backplate;
 };
 
-export const updateTrelloBoard2 = listTitlesToFocus => {
-  Array.prototype.filter
-    .call(
-      document.querySelectorAll(TRELLO_CLASSNAME__LIST_HEADER_WRAPPER),
-      el =>
-        !listTitlesToFocus.includes(
-          el.querySelector(TRELLO_CLASSNAME__LIST_HEADER_NAME).textContent,
-        ),
-    )
-    .map(el => {
-      el.parentElement.style.opacity = 0.2;
-      el.parentElement.parentElement.style.position = 'relative';
-      el.parentElement.parentElement.appendChild(createBackplateElement());
-    });
-};
-
 // expecting classname of `listNode` to be `TRELLO_CLASSNAME__LIST_WRAPPER`
 const updateList = (listNode, whitelist) => {
   if (
@@ -57,12 +41,30 @@ const updateList = (listNode, whitelist) => {
   }
 
   // Update styles
-  listNode.querySelector(
+  const listContentArea = listNode.querySelector(
     TRELLO_CLASSNAME__LIST_CONTENT_WRAPPER,
-  ).style.opacity = 0.2;
+  );
 
-  listNode.style.position = 'relative';
-  listNode.appendChild(createBackplateElement());
+  listContentArea.style.position = 'relative';
+  listContentArea.style.backgroundColor = LIST_BG_COLOR;
+
+  Array.prototype.forEach.call(
+    listContentArea.childNodes,
+    el => (el.style.opacity = 0.25),
+  );
+
+  const addNewCardBtn = listContentArea.querySelector('.js-open-card-composer');
+
+  addNewCardBtn.style.opacity = 1;
+
+  // listContentArea.appendChild(createBackplateElement());
+};
+
+const updateTrelloBoard = listTitlesToFocus => {
+  Array.prototype.forEach.call(
+    document.querySelectorAll(TRELLO_CLASSNAME__LIST_WRAPPER),
+    el => updateList(el, listTitlesToFocus),
+  );
 };
 
 const watchContent = whitelist => {
@@ -112,22 +114,26 @@ const watchBoard = whitelist => {
  * Main entrypoint
  */
 (function() {
-  // make sure uri doesn't start with `/`
-  const curUri = window.location.pathname.replace(/^\//, '');
-  const whitelist = ['Blockers', 'In Progress', 'Sprint Backlog'];
+  const [, curTrelloBoardId] = /b\/(.*)\//.exec(window.location.pathname);
 
+  // Handle state changes
   chrome.storage.onChanged.addListener(function(changes) {
-    if (!(curUri in changes)) {
-      return;
-    }
+    if (!(curTrelloBoardId in changes)) return;
 
-    updateTrelloBoard2(changes[curUri].newValue || changes[curUri].oldValue);
+    updateTrelloBoard(
+      changes[curTrelloBoardId].newValue.focus ||
+        changes[curTrelloBoardId].oldValue.focus,
+    );
   });
 
-  watchContent(whitelist);
-})();
+  // Fetch on initial load
+  chrome.storage.local.get(
+    [curTrelloBoardId],
+    ({ [curTrelloBoardId]: { enabled, focus } = {} }) => {
+      if (!enabled) return;
 
-// chrome.storage.local.set({
-//   'b/MMhfE9vK/transformers': whitelist,
-// });
-// });
+      // updateTrelloBoard(focalists);
+      watchContent(focus);
+    },
+  );
+})();

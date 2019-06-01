@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+/* global chrome */
+/* eslint no-console: off */
+import React, { useState, useEffect } from 'react';
 import {
   TextInputField,
   majorScale,
@@ -13,14 +15,88 @@ const Popup = () => {
   const [isEnabled, setEnabled] = useState(false);
   const [beenTouched, setTouched] = useState(false);
   const [lists, setLists] = useState('');
+  const [boardId, setBoardId] = useState(undefined);
 
-  const handleToggle = ({ target: value }) => {
+  useEffect(() => {
+    // Chrome API doesn't exist unless inside extension sandbox.
+    if (!chrome || !('storage' in chrome)) return;
+
+    chrome.tabs.query(
+      {
+        windowId: chrome.windows.WINDOW_ID_CURRENT,
+        active: true,
+      },
+      ([curTab]) => {
+        // TODO add error to UI: couldn't read current tab
+        if (!curTab || !('url' in curTab)) return;
+
+        // Not on Trello
+        // TODO Update UI to say only works on Trello
+        if (!curTab.url.includes('trello.com')) return;
+
+        const [, curTrelloBoardId] = /b\/(.*)\//.exec(curTab.url);
+        if (!curTrelloBoardId) return;
+
+        setBoardId(curTrelloBoardId);
+
+        chrome.storage.local.get(
+          [curTrelloBoardId],
+          ({ [curTrelloBoardId]: { enabled, focus } = {} }) => {
+            console.log('chrome storage, focalists: %s', focus);
+
+            // if (!enabled) {
+            //   setEnabled(false);
+            //   return;
+            // }
+
+            setEnabled(enabled);
+            focus && setLists(focus);
+          },
+        );
+      },
+    );
+  }, [boardId]);
+
+  const handleToggle = () => {
     setEnabled(!isEnabled);
-    setLists(value);
+
+    // lists && setLists(value);
 
     if (isEnabled && beenTouched && lists.length > 0) {
       setTouched(false);
     }
+  };
+
+  const handleInputChange = ({ target: { value } }) => {
+    !beenTouched && setTouched(true);
+
+    setLists(value);
+  };
+
+  const handleSave = () => {
+    // Chrome API doesn't exist unless inside extension sandbox.
+    if (!chrome || !('storage' in chrome)) return;
+
+    const userPref = {
+      [boardId]: {
+        enabled: isEnabled,
+        focus: lists
+          .replace(', ', ',')
+          .replace(/,$/, '')
+          .split(','),
+      },
+    };
+
+    // todo add callback which displays saved message on ui
+    chrome.storage.local.set(userPref, () => {
+      if (chrome.runtime.lastError) {
+        console.error(chrome.runtime.lastError);
+
+        return;
+      }
+
+      console.log('saved data', userPref);
+    });
   };
 
   return (
@@ -28,7 +104,7 @@ const Popup = () => {
       justifyContent="center"
       flexDirection="column"
       padding={majorScale(2)}
-      maxWidth="600px"
+      width="500px"
       display="flex"
       border="muted"
       flex={1}
@@ -65,9 +141,11 @@ const Popup = () => {
           width="100%"
           height={majorScale(6)}
           hint="(Titles are case sensitive)"
+          label=""
+          value={lists}
           description="Comma separate list of the list titles that should be focused."
           placeholder="Add lists to focus"
-          onChange={() => setTouched(true)}
+          onChange={handleInputChange}
         />
       </Pane>
       <Pane
@@ -77,7 +155,11 @@ const Popup = () => {
         display="flex"
         flex={1}
       >
-        <Button appearance="primary" disabled={!(isEnabled && beenTouched)}>
+        <Button
+          appearance="primary"
+          disabled={!(isEnabled && beenTouched)}
+          onClick={handleSave}
+        >
           Save
         </Button>
       </Pane>
