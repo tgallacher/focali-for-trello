@@ -108,6 +108,9 @@ const watchBoard = whitelist => {
   });
 };
 
+/**
+ * Main entrypoint
+ */
 (function() {
   // make sure uri doesn't start with `/`
   const curUri = window.location.pathname.replace(/^\//, '');
