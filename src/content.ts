@@ -7,7 +7,8 @@ const TRELLO_CLASSNAME__LIST_HEADER_WRAPPER = '.js-list-header';
 const TRELLO_CLASSNAME__LIST_HEADER_NAME = '.js-list-name-assist';
 const TRELLO_CLASSNAME__LIST_CONTENT_WRAPPER = '.js-list-content';
 
-const TRELLO__LIST_BG_COLOR = '#dfe1e6';
+// Trello's list color hex: '#dfe1e6';
+const LIST_BG_COLOR = '#333';
 
 chrome.storage.local.clear();
 
@@ -23,7 +24,7 @@ const createBackplateElement = () => {
   backplate.style.top = 0;
   backplate.style.right = 0;
   backplate.style.bottom = 0;
-  backplate.style.backgroundColor = TRELLO__LIST_BG_COLOR;
+  backplate.style.backgroundColor = LIST_BG_COLOR;
   backplate.style.zIndex = -10;
 
   return backplate;
