@@ -30,13 +30,24 @@ const fetchUserPrefs = (
   focusLists: string[];
 }> => {
   if (!curTrelloBoardId) {
-    return Promise.resolve({});
+    return Promise.resolve({
+      enabled: false,
+      focusLists: [],
+    });
   }
 
   return new Promise(resolve => {
     chrome.storage.local.get(
-      [curTrelloBoardId],
-      ({ [curTrelloBoardId]: { enabled = false, focus = [] } = {} }) => {
+      null, // get everything
+      userPrefData => {
+        let enabled = false;
+        let focus = [];
+
+        if (curTrelloBoardId in userPrefData) {
+          enabled = userPrefData[curTrelloBoardId].enabled;
+          focus = userPrefData[curTrelloBoardId].focus;
+        }
+
         return resolve({
           enabled,
           focusLists: focus,

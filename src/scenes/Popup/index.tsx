@@ -44,7 +44,7 @@ const Popup = () => {
 
         chrome.storage.local.get(
           [curTrelloBoardId],
-          ({ [curTrelloBoardId]: { enabled, focus } = {} }) => {
+          ({ [curTrelloBoardId]: { enabled = false, focus = [] } = {} }) => {
             setEnabled(enabled);
             focus !== '' && setLists(focus.join(','));
           },
