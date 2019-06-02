@@ -43,12 +43,12 @@ const Popup = () => {
           [curTrelloBoardId],
           ({ [curTrelloBoardId]: { enabled, focus } = {} }) => {
             setEnabled(enabled);
-            focus !== '' && setLists(focus.join(', '));
+            focus !== '' && setLists(focus.join(','));
           },
         );
       },
     );
-  }, [boardId, isEnabled]);
+  }, [boardId]);
 
   const handleToggle = () => {
     setEnabled(!isEnabled);
@@ -65,7 +65,10 @@ const Popup = () => {
     // Chrome API doesn't exist unless inside extension sandbox.
     if (!chrome || !('storage' in chrome)) return;
 
-    const newLists = lists.replace(/(,\s+|^,|,$)/, ',').split(',');
+    const newLists = lists
+      .replace(/,\s+/g, ',')
+      .replace(/^,|,$/g, '')
+      .split(',');
 
     const userPref = {
       [boardId]: {
@@ -86,8 +89,6 @@ const Popup = () => {
       setLists(newLists.join(','));
     });
   };
-
-  console.log('rendered with lists', lists);
 
   return (
     <Pane
