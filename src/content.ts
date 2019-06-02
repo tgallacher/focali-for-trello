@@ -6,39 +6,15 @@ const TRELLO_CLASSNAME__LIST_WRAPPER = '#board .js-list';
 // const TRELLO_CLASSNAME__LIST_HEADER_WRAPPER = '.js-list-header';
 const TRELLO_CLASSNAME__LIST_HEADER_NAME = '.js-list-name-assist';
 const TRELLO_CLASSNAME__LIST_CONTENT_WRAPPER = '.js-list-content';
-
-// Trello's list color hex: '#dfe1e6';
-const LIST_BG_COLOR = '#333';
-
-// chrome.storage.local.clear();
-
-/**
- * Create an element to sit behind lists so we don't see
- * the bg wallpaper.
- */
-const createBackplateElement = () => {
-  const backplate = document.createElement('div');
-
-  backplate.style.position = 'absolute';
-  backplate.style.left = 0;
-  backplate.style.top = 0;
-  backplate.style.right = 0;
-  backplate.style.bottom = 0;
-  backplate.style.backgroundColor = LIST_BG_COLOR;
-  backplate.style.zIndex = -10;
-
-  return backplate;
-};
+const TRELLO_CLASSNAME__LIST_HEADER_VIS_TEXTAREA = '.js-list-name-input';
+const TRELLO_CLASSNAME__LIST_ADD_CARD_BTN = '.js-open-card-composer';
 
 // expecting classname of `listNode` to be `TRELLO_CLASSNAME__LIST_WRAPPER`
 const updateList = (listNode, whitelist) => {
-  if (
-    whitelist.includes(
-      listNode.querySelector(TRELLO_CLASSNAME__LIST_HEADER_NAME).textContent,
-    )
-  ) {
-    return; // do nothing
-  }
+  const listTitle = listNode.querySelector(TRELLO_CLASSNAME__LIST_HEADER_NAME)
+    .textContent;
+
+  if (whitelist.includes(listTitle)) return; // do nothing
 
   // Update styles
   const listContentArea = listNode.querySelector(
@@ -46,18 +22,21 @@ const updateList = (listNode, whitelist) => {
   );
 
   listContentArea.style.position = 'relative';
-  listContentArea.style.backgroundColor = LIST_BG_COLOR;
+  listContentArea.style.backgroundColor = '#333';
 
   Array.prototype.forEach.call(
     listContentArea.childNodes,
     el => (el.style.opacity = 0.25),
   );
 
-  const addNewCardBtn = listContentArea.querySelector('.js-open-card-composer');
-
-  addNewCardBtn.style.opacity = 1;
-
-  // listContentArea.appendChild(createBackplateElement());
+  // Ensure new card btn is visible
+  listContentArea.querySelector(
+    TRELLO_CLASSNAME__LIST_ADD_CARD_BTN,
+  ).style.opacity = 1;
+  // Ensure we can still read each unfocused list title
+  listContentArea.querySelector(
+    TRELLO_CLASSNAME__LIST_HEADER_VIS_TEXTAREA,
+  ).style.color = '#fff';
 };
 
 const updateTrelloBoard = listTitlesToFocus => {
