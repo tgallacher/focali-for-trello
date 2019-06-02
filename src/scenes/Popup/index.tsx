@@ -42,18 +42,13 @@ const Popup = () => {
         chrome.storage.local.get(
           [curTrelloBoardId],
           ({ [curTrelloBoardId]: { enabled, focus } = {} }) => {
-            // if (!enabled) {
-            //   setEnabled(false);
-            //   return;
-            // }
-
             setEnabled(enabled);
             focus !== '' && setLists(focus.join(', '));
           },
         );
       },
     );
-  }, [boardId]);
+  }, [boardId, isEnabled]);
 
   const handleToggle = () => {
     setEnabled(!isEnabled);

@@ -10,6 +10,7 @@ const FOCALI_CLASSNAME__FOCUSED = 'focali__list-focused';
 const FOCALI_CLASSNAME__UNFOCUSED = 'focali__list-unfocused';
 
 /**
+ * Toggle focus on the provided DOMNode
  *
  * @param listNode DOMNode with classname of TRELLO_CLASSNAME__LIST_WRAPPER
  * @param whitelist list of columns titles to focus
@@ -39,10 +40,11 @@ const updateList = (listNode, whitelist) => {
 };
 
 /**
+ * Run focus toggle across entire Trello board
  *
  * @param listTitlesToFocus list of columns titles to focus
  */
-const updateTrelloBoard = listTitlesToFocus => {
+const updateTrelloBoard = (listTitlesToFocus: string[]): void => {
   console.log('updateTrelloBoard() with whitelist', listTitlesToFocus);
   Array.prototype.forEach.call(
     document.querySelectorAll(TRELLO_CLASSNAME__LIST_WRAPPER),
@@ -51,9 +53,10 @@ const updateTrelloBoard = listTitlesToFocus => {
 };
 
 /**
- *
+ * Reset focus back to Trello default.
+ * This effectively removes anything that this plugin has added.
  */
-const resetTrelloBoard = () => {
+const resetTrelloBoard = (): void => {
   Array.prototype.forEach.call(
     document.querySelectorAll(TRELLO_CLASSNAME__LIST_WRAPPER),
     el => {
@@ -64,10 +67,11 @@ const resetTrelloBoard = () => {
 };
 
 /**
+ * Watch Content DOM for changes, i.e. the board changing.
  *
  * @param whitelist list of columns titles to focus
  */
-const watchContent = whitelist => {
+const watchContent = (whitelist: string[]): void => {
   const observer = new MutationObserver(function(mutations) {
     for (const mutation of mutations) {
       for (const entry of [].slice.call(mutation.addedNodes)) {
@@ -88,12 +92,13 @@ const watchContent = whitelist => {
 };
 
 /**
+ * Watch board area for DOM changes, i.e. lists being added.
  *
  * @param whitelist list of columns titles to focus
  */
-const watchBoard = whitelist => {
+const watchBoard = (whitelist: string[]): void => {
   const listNodes = document.querySelectorAll(TRELLO_CLASSNAME__LIST_WRAPPER);
-  const observer = new MutationObserver(function(mutations) {
+  const observer = new MutationObserver(function(mutations: MutationRecord[]) {
     for (const mutation of mutations) {
       for (const entry of [].slice.call(mutation.addedNodes)) {
         if (entry instanceof Element && entry.classList.contains('js-list')) {
@@ -157,7 +162,6 @@ const watchBoard = whitelist => {
     ({ [curTrelloBoardId]: { enabled, focus } = {} }) => {
       if (!enabled) return;
 
-      // updateTrelloBoard(focalists);
       watchContent(focus);
     },
   );
