@@ -7,7 +7,7 @@
 
 Google Chrome extension for sharpening focus on (busy) [Trello](https://trello.com) boards.
 
-![Focali demo](./focali-demo-resized.gif)
+![Focali demo](./focali-demo.gif)
 
 ## Install / Get
 
