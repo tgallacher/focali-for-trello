@@ -1,0 +1,21 @@
+sudo: false
+
+language: node_js
+
+notifications:
+  email: false
+
+node_js: '10'
+
+install: yarn install
+
+script:
+  - yarn lint
+  - yarn test
+  - yarn build
+
+# Will still run for PRs if configured
+# in TravisCI UI options.
+branches:
+  only:
+    - master
