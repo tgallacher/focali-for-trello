@@ -42,15 +42,13 @@ const Popup = () => {
         chrome.storage.local.get(
           [curTrelloBoardId],
           ({ [curTrelloBoardId]: { enabled, focus } = {} }) => {
-            console.log('chrome storage, focalists: %s', focus);
-
             // if (!enabled) {
             //   setEnabled(false);
             //   return;
             // }
 
             setEnabled(enabled);
-            focus && setLists(focus);
+            focus !== '' && setLists(focus.join(', '));
           },
         );
       },
@@ -59,12 +57,7 @@ const Popup = () => {
 
   const handleToggle = () => {
     setEnabled(!isEnabled);
-
-    // lists && setLists(value);
-
-    if (isEnabled && beenTouched && lists.length > 0) {
-      setTouched(false);
-    }
+    setTouched(true);
   };
 
   const handleInputChange = ({ target: { value } }) => {
@@ -77,13 +70,12 @@ const Popup = () => {
     // Chrome API doesn't exist unless inside extension sandbox.
     if (!chrome || !('storage' in chrome)) return;
 
+    const newLists = lists.replace(/(,\s+|^,|,$)/, ',').split(',');
+
     const userPref = {
       [boardId]: {
         enabled: isEnabled,
-        focus: lists
-          .replace(', ', ',')
-          .replace(/,$/, '')
-          .split(','),
+        focus: newLists,
       },
     };
 
@@ -95,9 +87,12 @@ const Popup = () => {
         return;
       }
 
-      console.log('saved data', userPref);
+      setTouched(false);
+      setLists(newLists.join(','));
     });
   };
+
+  console.log('rendered with lists', lists);
 
   return (
     <Pane
@@ -157,7 +152,7 @@ const Popup = () => {
       >
         <Button
           appearance="primary"
-          disabled={!(isEnabled && beenTouched)}
+          disabled={!beenTouched}
           onClick={handleSave}
         >
           Save

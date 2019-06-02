@@ -12,5 +12,5 @@
       "js": ["assets/scripts/content.js"]
     }
   ],
-  "permissions": ["*://trello.com/*", "storage"]
+  "permissions": ["*://trello.com/*", "storage", "tabs"]
 }

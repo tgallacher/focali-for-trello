@@ -1,51 +1,72 @@
 /* global chrome */
 /* eslint no-console: off */
+import focaliCss from './focali.scss';
 
 // Trello css classnames
 const TRELLO_CLASSNAME__LIST_WRAPPER = '#board .js-list';
-// const TRELLO_CLASSNAME__LIST_HEADER_WRAPPER = '.js-list-header';
 const TRELLO_CLASSNAME__LIST_HEADER_NAME = '.js-list-name-assist';
-const TRELLO_CLASSNAME__LIST_CONTENT_WRAPPER = '.js-list-content';
-const TRELLO_CLASSNAME__LIST_HEADER_VIS_TEXTAREA = '.js-list-name-input';
-const TRELLO_CLASSNAME__LIST_ADD_CARD_BTN = '.js-open-card-composer';
+// Focali css classnames
+const FOCALI_CLASSNAME__FOCUSED = 'focali__list-focused';
+const FOCALI_CLASSNAME__UNFOCUSED = 'focali__list-unfocused';
 
-// expecting classname of `listNode` to be `TRELLO_CLASSNAME__LIST_WRAPPER`
+/**
+ *
+ * @param listNode DOMNode with classname of TRELLO_CLASSNAME__LIST_WRAPPER
+ * @param whitelist list of columns titles to focus
+ */
 const updateList = (listNode, whitelist) => {
   const listTitle = listNode.querySelector(TRELLO_CLASSNAME__LIST_HEADER_NAME)
     .textContent;
 
-  if (whitelist.includes(listTitle)) return; // do nothing
+  if (!listNode.classList.contains('js-list')) {
+    console.warn(
+      `Focali for Trello: "updateList()" was invoked with a DOMNode at the wrong hierarchy level (given "${
+        listNode.classList
+      }"). Unexpected results may follow`,
+    );
+  }
 
-  // Update styles
-  const listContentArea = listNode.querySelector(
-    TRELLO_CLASSNAME__LIST_CONTENT_WRAPPER,
-  );
-
-  listContentArea.style.position = 'relative';
-  listContentArea.style.backgroundColor = '#333';
-
-  Array.prototype.forEach.call(
-    listContentArea.childNodes,
-    el => (el.style.opacity = 0.25),
-  );
-
-  // Ensure new card btn is visible
-  listContentArea.querySelector(
-    TRELLO_CLASSNAME__LIST_ADD_CARD_BTN,
-  ).style.opacity = 1;
-  // Ensure we can still read each unfocused list title
-  listContentArea.querySelector(
-    TRELLO_CLASSNAME__LIST_HEADER_VIS_TEXTAREA,
-  ).style.color = '#fff';
+  // Toggle classnames
+  if (whitelist.includes(listTitle)) {
+    // focused
+    listNode.classList.remove(FOCALI_CLASSNAME__UNFOCUSED);
+    listNode.classList.add(FOCALI_CLASSNAME__FOCUSED);
+  } else {
+    // un-focused
+    listNode.classList.remove(FOCALI_CLASSNAME__FOCUSED);
+    listNode.classList.add(FOCALI_CLASSNAME__UNFOCUSED);
+  }
 };
 
+/**
+ *
+ * @param listTitlesToFocus list of columns titles to focus
+ */
 const updateTrelloBoard = listTitlesToFocus => {
+  console.log('updateTrelloBoard() with whitelist', listTitlesToFocus);
   Array.prototype.forEach.call(
     document.querySelectorAll(TRELLO_CLASSNAME__LIST_WRAPPER),
     el => updateList(el, listTitlesToFocus),
   );
 };
 
+/**
+ *
+ */
+const resetTrelloBoard = () => {
+  Array.prototype.forEach.call(
+    document.querySelectorAll(TRELLO_CLASSNAME__LIST_WRAPPER),
+    el => {
+      el.classList.remove(FOCALI_CLASSNAME__FOCUSED);
+      el.classList.remove(FOCALI_CLASSNAME__UNFOCUSED);
+    },
+  );
+};
+
+/**
+ *
+ * @param whitelist list of columns titles to focus
+ */
 const watchContent = whitelist => {
   const observer = new MutationObserver(function(mutations) {
     for (const mutation of mutations) {
@@ -66,6 +87,10 @@ const watchContent = whitelist => {
   });
 };
 
+/**
+ *
+ * @param whitelist list of columns titles to focus
+ */
 const watchBoard = whitelist => {
   const listNodes = document.querySelectorAll(TRELLO_CLASSNAME__LIST_WRAPPER);
   const observer = new MutationObserver(function(mutations) {
@@ -96,13 +121,34 @@ const watchBoard = whitelist => {
   const [, curTrelloBoardId] = /b\/(.*)\//.exec(window.location.pathname);
 
   // Handle state changes
+  // TODO Add reseting board. if disabled
   chrome.storage.onChanged.addListener(function(changes) {
-    if (!(curTrelloBoardId in changes)) return;
+    console.log('storage change', changes);
 
-    updateTrelloBoard(
-      changes[curTrelloBoardId].newValue.focus ||
-        changes[curTrelloBoardId].oldValue.focus,
-    );
+    if (!(curTrelloBoardId in changes)) {
+      resetTrelloBoard();
+
+      return;
+    }
+
+    let focalists, enabled;
+    if ('newValue' in changes[curTrelloBoardId]) {
+      focalists = changes[curTrelloBoardId].newValue.focus;
+      enabled = changes[curTrelloBoardId].newValue.enabled;
+    } else if ('oldValue' in changes[curTrelloBoardId]) {
+      focalists = changes[curTrelloBoardId].oldValue.focus;
+      enabled = changes[curTrelloBoardId].oldValue.enabled;
+    }
+
+    if (enabled === false) {
+      resetTrelloBoard();
+
+      return;
+    }
+
+    Array.isArray(focalists) &&
+      focalists.length > 0 &&
+      updateTrelloBoard(focalists);
   });
 
   // Fetch on initial load
@@ -115,4 +161,8 @@ const watchBoard = whitelist => {
       watchContent(focus);
     },
   );
+
+  const link = document.createElement('link');
+  link.href = focaliCss;
+  document.head.appendChild(link);
 })();
