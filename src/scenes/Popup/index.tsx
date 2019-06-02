@@ -1,6 +1,6 @@
 /* global chrome */
 /* eslint no-console: off */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import {
   TextInputField,
   majorScale,
@@ -18,8 +18,9 @@ const Popup = () => {
   const [lists, setLists] = useState('');
   const [boardId, setBoardId] = useState(undefined);
   const [boardName, setBoardName] = useState('');
+  const [isTrello, setIsTrello] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // Chrome API doesn't exist unless inside extension sandbox.
     if (!chrome || !('storage' in chrome)) return;
 
@@ -33,8 +34,10 @@ const Popup = () => {
         if (!curTab || !('url' in curTab)) return;
 
         // Not on Trello
-        // TODO Update UI to say only works on Trello
         if (!curTab.url.includes('trello.com')) return;
+        if (curTab.url.includes('trello.com') && curTab.url.includes('/boards'))
+          return;
+        setIsTrello(true);
 
         setBoardName(curTab.title.replace(' | Trello', ''));
         const [, curTrelloBoardId] = /b\/(.*)\//.exec(curTab.url);
@@ -51,7 +54,7 @@ const Popup = () => {
         );
       },
     );
-  }, [boardId]);
+  }, []);
 
   const handleToggle = () => {
     setEnabled(!isEnabled);
@@ -92,6 +95,35 @@ const Popup = () => {
       setLists(newLists.join(','));
     });
   };
+
+  if (!isTrello) {
+    return (
+      <Pane
+        justifyContent="center"
+        flexDirection="column"
+        padding={majorScale(2)}
+        width="500px"
+        display="flex"
+        border="muted"
+        flex={1}
+      >
+        <Heading is="h1" size={700}>
+          FocaLi for Trello
+        </Heading>
+
+        <Pane marginTop={majorScale(4)} flex={1} textAlign="center">
+          <Heading size={500} marginBottom={majorScale(2)}>
+            Oops!
+          </Heading>
+
+          <Text>
+            The current Tab doesn&apos;t appear to be a Trello.com page or a
+            Trello board. Make sure you are on a Trello board.
+          </Text>
+        </Pane>
+      </Pane>
+    );
+  }
 
   return (
     <Pane
