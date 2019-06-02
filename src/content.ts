@@ -10,6 +10,43 @@ const FOCALI_CLASSNAME__FOCUSED = 'focali__list-focused';
 const FOCALI_CLASSNAME__UNFOCUSED = 'focali__list-unfocused';
 
 /**
+ * Gets current board ID from page URI.
+ */
+const getCurBoardId = (): string | undefined => {
+  // TODO check URL contains trello.com
+  const [, curTrelloBoardId] = /b\/(.*)\//.exec(window.location.pathname);
+
+  return curTrelloBoardId;
+};
+
+/**
+ * Retrieve user prefs from storage.
+ * Prefs are added using the Popup UI.
+ */
+const fetchUserPrefs = (
+  curTrelloBoardId: string | undefined,
+): Promise<{
+  enabled: boolean;
+  focusLists: string[];
+}> => {
+  if (!curTrelloBoardId) {
+    return Promise.resolve({});
+  }
+
+  return new Promise(resolve => {
+    chrome.storage.local.get(
+      [curTrelloBoardId],
+      ({ [curTrelloBoardId]: { enabled = false, focus = [] } = {} }) => {
+        return resolve({
+          enabled,
+          focusLists: focus,
+        });
+      },
+    );
+  });
+};
+
+/**
  * Toggle focus on the provided DOMNode
  *
  * @param listNode DOMNode with classname of TRELLO_CLASSNAME__LIST_WRAPPER
@@ -45,7 +82,6 @@ const updateList = (listNode, whitelist) => {
  * @param listTitlesToFocus list of columns titles to focus
  */
 const updateTrelloBoard = (listTitlesToFocus: string[]): void => {
-  console.log('updateTrelloBoard() with whitelist', listTitlesToFocus);
   Array.prototype.forEach.call(
     document.querySelectorAll(TRELLO_CLASSNAME__LIST_WRAPPER),
     el => updateList(el, listTitlesToFocus),
@@ -67,51 +103,35 @@ const resetTrelloBoard = (): void => {
 };
 
 /**
- * Watch Content DOM for changes, i.e. the board changing.
- *
- * @param whitelist list of columns titles to focus
- */
-const watchContent = (whitelist: string[]): void => {
-  const observer = new MutationObserver(function(mutations) {
-    for (const mutation of mutations) {
-      for (const entry of [].slice.call(mutation.addedNodes)) {
-        if (
-          entry instanceof Element &&
-          entry.classList.contains('board-wrapper')
-        ) {
-          watchBoard(whitelist);
-          return;
-        }
-      }
-    }
-  });
-
-  observer.observe(document.querySelector('#content'), {
-    childList: true,
-  });
-};
-
-/**
  * Watch board area for DOM changes, i.e. lists being added.
- *
- * @param whitelist list of columns titles to focus
  */
-const watchBoard = (whitelist: string[]): void => {
+const watchBoard = (): void => {
   const listNodes = document.querySelectorAll(TRELLO_CLASSNAME__LIST_WRAPPER);
-  const observer = new MutationObserver(function(mutations: MutationRecord[]) {
-    for (const mutation of mutations) {
-      for (const entry of [].slice.call(mutation.addedNodes)) {
+  const observer = new MutationObserver(async function(
+    mutations: MutationRecord[],
+  ) {
+    const { enabled, focusLists } = await fetchUserPrefs(getCurBoardId());
+
+    if (!enabled) return;
+
+    Array.prototype.forEach.call(mutations, mutation => {
+      Array.prototype.forEach.call(mutation.addedNodes, entry => {
         if (entry instanceof Element && entry.classList.contains('js-list')) {
-          updateList(entry, whitelist);
+          updateList(entry, focusLists);
         }
-      }
-    }
+      });
+    });
   });
 
   // Update lists we already have
-  for (const listNode of Array.prototype.slice.call(listNodes)) {
-    updateList(listNode, whitelist);
-  }
+  fetchUserPrefs(getCurBoardId()).then(({ enabled, focusLists }) => {
+    // Assume enabled check has already happened by this point
+    if (!enabled) return;
+
+    Array.prototype.forEach.call(listNodes, listNode => {
+      updateList(listNode, focusLists);
+    });
+  });
 
   // watch for changes
   observer.observe(document.querySelector('#board'), {
@@ -120,15 +140,35 @@ const watchBoard = (whitelist: string[]): void => {
 };
 
 /**
+ * Watch Content DOM for changes, i.e. the board changing.
+ */
+const watchContent = (): void => {
+  const observer = new MutationObserver(function(mutations) {
+    Array.prototype.forEach.call(mutations, mutation => {
+      Array.prototype.forEach.call(mutation.addedNodes, entry => {
+        if (
+          entry instanceof Element &&
+          entry.classList.contains('board-wrapper')
+        ) {
+          watchBoard();
+          return;
+        }
+      });
+    });
+  });
+
+  observer.observe(document.querySelector('#content'), {
+    childList: true,
+  });
+};
+
+/**
  * Main entrypoint
  */
-(function() {
-  const [, curTrelloBoardId] = /b\/(.*)\//.exec(window.location.pathname);
-
+(async function() {
   // Handle state changes
-  // TODO Add reseting board. if disabled
   chrome.storage.onChanged.addListener(function(changes) {
-    console.log('storage change', changes);
+    const curTrelloBoardId = getCurBoardId();
 
     if (!(curTrelloBoardId in changes)) {
       resetTrelloBoard();
@@ -156,15 +196,7 @@ const watchBoard = (whitelist: string[]): void => {
       updateTrelloBoard(focalists);
   });
 
-  // Fetch on initial load
-  chrome.storage.local.get(
-    [curTrelloBoardId],
-    ({ [curTrelloBoardId]: { enabled, focus } = {} }) => {
-      if (!enabled) return;
-
-      watchContent(focus);
-    },
-  );
+  watchContent();
 
   const link = document.createElement('link');
   link.href = focaliCss;
