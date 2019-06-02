@@ -6,6 +6,7 @@ import {
   majorScale,
   Heading,
   Button,
+  Strong,
   Switch,
   Pane,
   Text,
@@ -16,6 +17,7 @@ const Popup = () => {
   const [beenTouched, setTouched] = useState(false);
   const [lists, setLists] = useState('');
   const [boardId, setBoardId] = useState(undefined);
+  const [boardName, setBoardName] = useState('');
 
   useEffect(() => {
     // Chrome API doesn't exist unless inside extension sandbox.
@@ -34,6 +36,7 @@ const Popup = () => {
         // TODO Update UI to say only works on Trello
         if (!curTab.url.includes('trello.com')) return;
 
+        setBoardName(curTab.title.replace(' | Trello', ''));
         const [, curTrelloBoardId] = /b\/(.*)\//.exec(curTab.url);
         if (!curTrelloBoardId) return;
 
@@ -101,11 +104,11 @@ const Popup = () => {
       flex={1}
     >
       <Heading is="h1" size={700}>
-        Focali for Trello
+        FocaLi for Trello
       </Heading>
 
       <Pane
-        justifyContent="center"
+        justifyContent="flex-start"
         alignItems="center"
         marginTop={majorScale(4)}
         display="flex"
@@ -117,14 +120,16 @@ const Popup = () => {
           checked={isEnabled}
           onChange={handleToggle}
         />
-        <Text marginLeft={majorScale(2)}>Enable on this board</Text>
+        <Text marginLeft={majorScale(2)}>
+          Enable on this board: &quot;<Strong>{boardName}</Strong>&quot;
+        </Text>
       </Pane>
 
       <Pane
         justifyContent="center"
         display="flex"
         flex={1}
-        paddingX={majorScale(3)}
+        paddingRight={majorScale(3)}
         marginTop={majorScale(3)}
       >
         <TextInputField
