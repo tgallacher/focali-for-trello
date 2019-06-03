@@ -1,6 +1,6 @@
 {
-  "name": "trello-focali-chrome-ext",
-  "version": "0.0.0",
+  "name": "focali-for-trello-chrome-ext",
+  "version": "0.1.0",
   "main": "dist/index.js",
   "description": "",
   "private": true,
