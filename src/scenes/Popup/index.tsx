@@ -15,11 +15,13 @@ import {
 import Masthead from './Masthead';
 
 interface Props {
+  /* trigger dev mode for storybook dev */
+  devMode?: boolean;
   /* Mock whether we are on Trello site or not */
   debugIsTrello?: boolean;
 }
 
-const Popup = ({ debugIsTrello }: Props): any => {
+const Popup = ({ debugIsTrello, devMode }: Props): any => {
   const [isEnabled, setEnabled] = useState(false);
   const [beenTouched, setTouched] = useState(false);
   const [lists, setLists] = useState('');
@@ -28,6 +30,9 @@ const Popup = ({ debugIsTrello }: Props): any => {
   const [isTrello, setIsTrello] = useState(debugIsTrello);
 
   useLayoutEffect(() => {
+    // Allow us to immitate different ui in storybook
+    if (devMode) return;
+
     // Chrome API doesn't exist unless inside extension sandbox.
     if (!('chrome' in window) || !('storage' in chrome)) return;
 
@@ -37,21 +42,18 @@ const Popup = ({ debugIsTrello }: Props): any => {
         active: true,
       },
       ([curTab]) => {
-        // Allow us to immitate different ui in storybook
-        if (debugIsTrello !== false) {
-          // TODO add error to UI: couldn't read current tab
-          if (!curTab || !('url' in curTab)) return;
+        // TODO add error to UI: couldn't read current tab
+        if (!curTab || !('url' in curTab)) return;
 
-          // Not on Trello
-          if (!curTab.url.includes('trello.com')) return;
-          if (
-            curTab.url.includes('trello.com') &&
-            curTab.url.includes('/boards')
-          ) {
-            return;
-          }
-          setIsTrello(true);
+        // Not on Trello
+        if (!curTab.url.includes('trello.com')) return;
+        if (
+          curTab.url.includes('trello.com') &&
+          curTab.url.includes('/boards')
+        ) {
+          return;
         }
+        setIsTrello(true);
 
         setBoardName(curTab.title.replace(' | Trello', ''));
         const [, curTrelloBoardId] = /b\/(.*)\//.exec(curTab.url);
@@ -68,7 +70,7 @@ const Popup = ({ debugIsTrello }: Props): any => {
         );
       },
     );
-  }, [debugIsTrello]);
+  }, [debugIsTrello, devMode]);
 
   const handleToggle = () => {
     setEnabled(!isEnabled);
@@ -199,7 +201,8 @@ const Popup = ({ debugIsTrello }: Props): any => {
 };
 
 Popup.defaultProps = {
-  debugIsTrello: false,
+  devMode: false,
+  debugIsTrello: undefined,
 };
 
 export default Popup;
