@@ -37,7 +37,7 @@ const fetchUserPrefs = (
   }
 
   return new Promise(resolve => {
-    chrome.storage.local.get(
+    chrome.storage.sync.get(
       null, // get everything
       userPrefData => {
         let enabled = false;

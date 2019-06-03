@@ -45,7 +45,7 @@ const Popup = () => {
 
         setBoardId(curTrelloBoardId);
 
-        chrome.storage.local.get(
+        chrome.storage.sync.get(
           [curTrelloBoardId],
           ({ [curTrelloBoardId]: { enabled = false, focus = [] } = {} }) => {
             setEnabled(enabled);
@@ -84,7 +84,7 @@ const Popup = () => {
     };
 
     // todo add callback which displays saved message on ui
-    chrome.storage.local.set(userPref, () => {
+    chrome.storage.sync.set(userPref, () => {
       if (chrome.runtime.lastError) {
         console.error(chrome.runtime.lastError);
 
