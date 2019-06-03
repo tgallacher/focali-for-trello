@@ -106,12 +106,12 @@ module.exports = {
       },
     ]),
     // Copy the images folder and optimize all the images
-    // new CopyWebpackPlugin([
-    //   {
-    //     from: './src/images/',
-    //     to: 'assets/images',
-    //   },
-    // ]),
+    new CopyWebpackPlugin([
+      {
+        from: './images/',
+        to: 'assets/images',
+      },
+    ]),
     new ImageminPlugin({
       test: /\.(jpe?g|png|gif|svg)$/i,
     }),

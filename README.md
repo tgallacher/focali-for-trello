@@ -3,13 +3,20 @@
 [![Build Status](https://travis-ci.com/tgallacher/focali-for-trello.svg?branch=master)](https://travis-ci.com/tgallacher/focali-for-trello)
 [![Coverage Status](https://coveralls.io/repos/github/tgallacher/focali-for-trello/badge.svg?branch=master)](https://coveralls.io/github/tgallacher/focali-for-trello?branch=master)
 
-# FocaLi for Trello
+
+<p align="center">
+  <img class="center" src="./images/focali-splash.png" alt="Focali splash" />
+</p>
+
+# Focali for Trello
 
 Google Chrome extension for sharpening focus on (busy) [Trello](https://trello.com) boards.
 
-![Focali demo](./focali-demo.gif)
 
-## Install / Get
+![Focali demo](./images/focali-demo.gif)
+
+
+## Install
 
 Install from the [Chrome Web Store](#). (TODO)
 
@@ -29,3 +36,7 @@ yarn build:dev --watch
 Then use the Chrome extensions in "developer mode" and load the unpacked extension. Simply refresh the extension when any files are changed, to see how the work in the browser.
 
 > Note: Some parts of the extension rely on the `chrome` API and so can't be fully tested inside StorybookJS. Hence the workflow above.
+
+## Acknoledgement
+
+Logo and graphics created by [Andrew Sims](https://github.com/andrew-sims).

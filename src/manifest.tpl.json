@@ -3,6 +3,11 @@
   "version": "x.x.x",
   "manifest_version": 2,
   "description": "Chrome extension to add focus to Trello boards.",
+  "icons": {
+    "16": "assets/images/focali-logo-16x16.png",
+    "48": "assets/images/focali-logo-48x48.png",
+   "128": "assets/images/focali-logo-128x128.png"
+  },
   "browser_action": {
     "default_popup": "popup.html"
   },
