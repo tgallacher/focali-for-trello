@@ -22,7 +22,7 @@ const Popup = () => {
 
   useLayoutEffect(() => {
     // Chrome API doesn't exist unless inside extension sandbox.
-    if (!chrome || !('storage' in chrome)) return;
+    if (!('chrome' in window) || !('storage' in chrome)) return;
 
     chrome.tabs.query(
       {
@@ -69,7 +69,7 @@ const Popup = () => {
 
   const handleSave = () => {
     // Chrome API doesn't exist unless inside extension sandbox.
-    if (!chrome || !('storage' in chrome)) return;
+    if (!('chrome' in window) || !('storage' in chrome)) return;
 
     const newLists = lists
       .replace(/,\s+/g, ',')
