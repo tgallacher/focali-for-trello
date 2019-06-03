@@ -14,7 +14,8 @@ const FOCALI_CLASSNAME__UNFOCUSED = 'focali__list-unfocused';
  */
 const getCurBoardId = (): string | undefined => {
   // TODO check URL contains trello.com
-  const [, curTrelloBoardId] = /b\/(.*)\//.exec(window.location.pathname);
+  const res = /trello\.com\/b\/(.*)\//.exec(window.location.pathname);
+  const [, curTrelloBoardId] = res == null ? [] : res;
 
   return curTrelloBoardId;
 };
