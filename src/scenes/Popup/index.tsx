@@ -12,6 +12,7 @@ import {
   Text,
 } from 'evergreen-ui';
 
+import Masthead from './Masthead';
 
 interface Props {
   /* Mock whether we are on Trello site or not */
@@ -109,22 +110,23 @@ const Popup = ({ debugIsTrello }: Props): any => {
     });
   };
 
-  if (!isTrello) {
-    return (
-      <Pane
-        justifyContent="center"
-        flexDirection="column"
-        padding={majorScale(2)}
-        width="500px"
-        display="flex"
-        border="muted"
-        flex={1}
-      >
-        <Heading is="h1" size={700}>
-          FocaLi for Trello
-        </Heading>
-
-        <Pane marginTop={majorScale(4)} flex={1} textAlign="center">
+  return (
+    <Pane
+      justifyContent="center"
+      flexDirection="column"
+      width="500px"
+      display="flex"
+      border="muted"
+      flex={1}
+    >
+      <Masthead padding={majorScale(2)} title="Focali for Trello" />
+      {!isTrello && (
+        <Pane
+          padding={majorScale(2)}
+          marginTop={majorScale(4)}
+          flex={1}
+          textAlign="center"
+        >
           <Heading size={500} marginBottom={majorScale(2)}>
             Oops!
           </Heading>
@@ -134,76 +136,64 @@ const Popup = ({ debugIsTrello }: Props): any => {
             Trello board. Make sure you are on a Trello board.
           </Text>
         </Pane>
-      </Pane>
-    );
-  }
+      )}
+      {isTrello && (
+        <Pane padding={majorScale(2)}>
+          <Pane
+            justifyContent="flex-start"
+            alignItems="center"
+            marginTop={majorScale(4)}
+            display="flex"
+            flex={1}
+          >
+            <Switch
+              display="inline-block"
+              height={24}
+              checked={isEnabled}
+              onChange={handleToggle}
+            />
+            <Text marginLeft={majorScale(2)}>
+              Enable on this board: &quot;<Strong>{boardName}</Strong>&quot;
+            </Text>
+          </Pane>
 
-  return (
-    <Pane
-      justifyContent="center"
-      flexDirection="column"
-      padding={majorScale(2)}
-      width="500px"
-      display="flex"
-      border="muted"
-      flex={1}
-    >
-      <Heading is="h1" size={700}>
-        FocaLi for Trello
-      </Heading>
+          <Pane
+            justifyContent="center"
+            display="flex"
+            flex={1}
+            paddingRight={majorScale(3)}
+            marginTop={majorScale(3)}
+          >
+            <TextInputField
+              disabled={!isEnabled}
+              width="100%"
+              height={majorScale(6)}
+              hint="(Titles are case sensitive)"
+              label=""
+              value={lists}
+              description="Comma separate list of the list titles that should be focused."
+              placeholder="Add lists to focus"
+              onChange={handleInputChange}
+            />
+          </Pane>
 
-      <Pane
-        justifyContent="flex-start"
-        alignItems="center"
-        marginTop={majorScale(4)}
-        display="flex"
-        flex={1}
-      >
-        <Switch
-          display="inline-block"
-          height={24}
-          checked={isEnabled}
-          onChange={handleToggle}
-        />
-        <Text marginLeft={majorScale(2)}>
-          Enable on this board: &quot;<Strong>{boardName}</Strong>&quot;
-        </Text>
-      </Pane>
-
-      <Pane
-        justifyContent="center"
-        display="flex"
-        flex={1}
-        paddingRight={majorScale(3)}
-        marginTop={majorScale(3)}
-      >
-        <TextInputField
-          disabled={!isEnabled}
-          width="100%"
-          height={majorScale(6)}
-          hint="(Titles are case sensitive)"
-          label=""
-          value={lists}
-          description="Comma separate list of the list titles that should be focused."
-          placeholder="Add lists to focus"
-          onChange={handleInputChange}
-        />
-      </Pane>
-      <Pane
-        justifyContent="flex-end"
-        marginTop={majorScale(4)}
-        paddingX={majorScale(3)}
-        display="flex"
-        flex={1}
-      >
-        <Button
-          appearance="primary"
-          disabled={!beenTouched}
-          onClick={handleSave}
-        >
-          Save
-        </Button>
-      </Pane>
+          <Pane
+            justifyContent="flex-end"
+            marginTop={majorScale(4)}
+            paddingX={majorScale(3)}
+            display="flex"
+            flex={1}
+          >
+            <Button
+              appearance="primary"
+              disabled={!beenTouched}
+              onClick={handleSave}
+            >
+              Save
+            </Button>
+          </Pane>
+        </Pane>
+      )}
     </Pane>
   );
 };
