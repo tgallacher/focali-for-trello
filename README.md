@@ -39,4 +39,4 @@ Then use the Chrome extensions in "developer mode" and load the unpacked extensi
 
 ## Acknoledgement
 
-Logo and graphics created by [Andrew Sims](https://github.com/andrew-sims).
+Logo and graphics created by [Andrew Sims](http://andrewsims.co/).
