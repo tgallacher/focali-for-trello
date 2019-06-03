@@ -28,6 +28,7 @@ const Popup = ({ debugIsTrello, devMode }: Props): any => {
   const [boardId, setBoardId] = useState(undefined);
   const [boardName, setBoardName] = useState('');
   const [isTrello, setIsTrello] = useState(debugIsTrello);
+  const [invalidPageMsg, setInvalidPageMsg] = useState('');
 
   useLayoutEffect(() => {
     // Allow us to immitate different ui in storybook
@@ -46,11 +47,28 @@ const Popup = ({ debugIsTrello, devMode }: Props): any => {
         if (!curTab || !('url' in curTab)) return;
 
         // Not on Trello
-        if (!curTab.url.includes('trello.com')) return;
+        if (!curTab.url.includes('trello.com')) {
+          setInvalidPageMsg(
+            "The current Tab doesn't appear to be a Trello.com page",
+          );
+
+          return;
+        }
+        // On Trello board summary page
         if (
           curTab.url.includes('trello.com') &&
           curTab.url.includes('/boards')
         ) {
+          setInvalidPageMsg(
+            "You can't change settings when viewing the board summary page.",
+          );
+
+          return;
+        }
+        // Viewing a card detail
+        if (curTab.url.includes('trello.com') && curTab.url.includes('/c/')) {
+          setInvalidPageMsg("You can't change settings when viewing a card.");
+
           return;
         }
         setIsTrello(true);
@@ -133,10 +151,7 @@ const Popup = ({ debugIsTrello, devMode }: Props): any => {
             Oops!
           </Heading>
 
-          <Text>
-            The current Tab doesn&apos;t appear to be a Trello.com page or a
-            Trello board. Make sure you are on a Trello board.
-          </Text>
+          <Text>{invalidPageMsg}</Text>
         </Pane>
       )}
       {isTrello && (
