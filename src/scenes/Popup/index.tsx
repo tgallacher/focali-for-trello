@@ -12,13 +12,19 @@ import {
   Text,
 } from 'evergreen-ui';
 
-const Popup = () => {
+
+interface Props {
+  /* Mock whether we are on Trello site or not */
+  debugIsTrello?: boolean;
+}
+
+const Popup = ({ debugIsTrello }: Props): any => {
   const [isEnabled, setEnabled] = useState(false);
   const [beenTouched, setTouched] = useState(false);
   const [lists, setLists] = useState('');
   const [boardId, setBoardId] = useState(undefined);
   const [boardName, setBoardName] = useState('');
-  const [isTrello, setIsTrello] = useState(false);
+  const [isTrello, setIsTrello] = useState(debugIsTrello);
 
   useLayoutEffect(() => {
     // Chrome API doesn't exist unless inside extension sandbox.
@@ -30,14 +36,21 @@ const Popup = () => {
         active: true,
       },
       ([curTab]) => {
-        // TODO add error to UI: couldn't read current tab
-        if (!curTab || !('url' in curTab)) return;
+        // Allow us to immitate different ui in storybook
+        if (debugIsTrello !== false) {
+          // TODO add error to UI: couldn't read current tab
+          if (!curTab || !('url' in curTab)) return;
 
-        // Not on Trello
-        if (!curTab.url.includes('trello.com')) return;
-        if (curTab.url.includes('trello.com') && curTab.url.includes('/boards'))
-          return;
-        setIsTrello(true);
+          // Not on Trello
+          if (!curTab.url.includes('trello.com')) return;
+          if (
+            curTab.url.includes('trello.com') &&
+            curTab.url.includes('/boards')
+          ) {
+            return;
+          }
+          setIsTrello(true);
+        }
 
         setBoardName(curTab.title.replace(' | Trello', ''));
         const [, curTrelloBoardId] = /b\/(.*)\//.exec(curTab.url);
@@ -54,7 +67,7 @@ const Popup = () => {
         );
       },
     );
-  }, []);
+  }, [debugIsTrello]);
 
   const handleToggle = () => {
     setEnabled(!isEnabled);
@@ -193,6 +206,10 @@ const Popup = () => {
       </Pane>
     </Pane>
   );
+};
+
+Popup.defaultProps = {
+  debugIsTrello: false,
 };
 
 export default Popup;
