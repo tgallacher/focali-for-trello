@@ -1,4 +1,5 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-green.svg?style=flat-square&logo=Github)](http://makeapullrequest.com)
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=flat-square)](https://github.com/tgallacher/focali-for-trello/graphs/commit-activity)
 [![Build Status](https://travis-ci.com/tgallacher/focali-for-trello.svg?branch=master)](https://travis-ci.com/tgallacher/focali-for-trello)
 [![Coverage Status](https://coveralls.io/repos/github/tgallacher/focali-for-trello/badge.svg?branch=master)](https://coveralls.io/github/tgallacher/focali-for-trello?branch=master)
@@ -40,3 +41,15 @@ Then use the Chrome extensions in "developer mode" and load the unpacked extensi
 ## Acknoledgement
 
 Logo and graphics created by [Andrew Sims](http://andrewsims.co/).
+
+## Contributors
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore -->
+<table><tr><td align="center"><a href="https://commented.tech"><img src="https://avatars1.githubusercontent.com/u/6460370?v=4" width="100px;" alt="Tom Gallacher"/><br /><sub><b>Tom Gallacher</b></sub></a><br /><a href="#ideas-tgallacher" title="Ideas, Planning, & Feedback">🤔</a> <a href="#maintenance-tgallacher" title="Maintenance">🚧</a> <a href="https://github.com/tgallacher/focali-for-trello/commits?author=tgallacher" title="Code">💻</a> <a href="https://github.com/tgallacher/focali-for-trello/issues?q=author%3Atgallacher" title="Bug reports">🐛</a> <a href="https://github.com/tgallacher/focali-for-trello/commits?author=tgallacher" title="Documentation">📖</a></td></tr></table>
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
