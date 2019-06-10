@@ -1,0 +1,23 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "andrew-sims",
+      "name": "Andrew ",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/12777283?v=4",
+      "profile": "http://andrewsims.co",
+      "contributions": [
+        "design"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "focali-for-trello",
+  "projectOwner": "tgallacher",
+  "repoType": "github",
+  "repoHost": "https://github.com"
+}
