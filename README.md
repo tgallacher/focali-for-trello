@@ -1,5 +1,5 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-green.svg?style=flat-square&logo=Github)](http://makeapullrequest.com)
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-green.svg?style=flat-square)](#contributors)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=flat-square)](https://github.com/tgallacher/focali-for-trello/graphs/commit-activity)
 [![Build Status](https://travis-ci.com/tgallacher/focali-for-trello.svg?branch=master)](https://travis-ci.com/tgallacher/focali-for-trello)
 [![Coverage Status](https://coveralls.io/repos/github/tgallacher/focali-for-trello/badge.svg?branch=master)](https://coveralls.io/github/tgallacher/focali-for-trello?branch=master)
