@@ -2,7 +2,7 @@
   "name": "Focali for Trello",
   "version": "x.x.x",
   "manifest_version": 2,
-  "description": "Chrome extension to add focus to Trello boards.",
+  "description": "Add laser sharp focus to lists on any Trello board.",
   "icons": {
     "16": "assets/images/focali-logo-16x16.png",
     "48": "assets/images/focali-logo-48x48.png",
