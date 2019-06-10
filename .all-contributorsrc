@@ -1,0 +1,27 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "tgallacher",
+      "name": "Tom Gallacher",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/6460370?v=4",
+      "profile": "https://commented.tech",
+      "contributions": [
+        "ideas",
+        "maintenance",
+        "code",
+        "bug",
+        "doc"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "focali-for-trello",
+  "projectOwner": "tgallacher",
+  "repoType": "github",
+  "repoHost": "https://github.com"
+}
