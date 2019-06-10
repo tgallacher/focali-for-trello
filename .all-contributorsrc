@@ -1,18 +1,21 @@
 {
-  "files": [
-    "README.md"
-  ],
+  "files": ["README.md"],
   "imageSize": 100,
   "commit": false,
   "contributors": [
+    {
+      "login": "tgallacher",
+      "name": "Tom Gallacher",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/6460370?v=4",
+      "profile": "https://commented.tech",
+      "contributions": ["ideas", "maintenance", "code", "bug", "doc"]
+    },
     {
       "login": "andrew-sims",
       "name": "Andrew ",
       "avatar_url": "https://avatars3.githubusercontent.com/u/12777283?v=4",
       "profile": "http://andrewsims.co",
-      "contributions": [
-        "design"
-      ]
+      "contributions": ["design"]
     }
   ],
   "contributorsPerLine": 7,
