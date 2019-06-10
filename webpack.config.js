@@ -93,6 +93,12 @@ module.exports = {
            * Keep extension version inline with package version.
            */
           manifest.version = packageJSON.version;
+          //
+          // Keep the extension ID consistent across builds/releases
+          //
+          if (isProduction) {
+            manifest.key = 'dbhglmbgeebnchiiaechpofjkjanhfoa';
+          }
           // Add a 'random' version suffix to easily
           // see changes between builds during prod-in-test runs.
           if (!isProduction) {
