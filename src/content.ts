@@ -13,11 +13,16 @@ const FOCALI_CLASSNAME__UNFOCUSED = 'focali__list-unfocused';
  * Gets current board ID from page URI.
  */
 const getCurBoardId = (): string | undefined => {
-  // TODO check URL contains trello.com
-  const res = /trello\.com\/b\/(.*)\//.exec(window.location.pathname);
+  // This script is only loaded on Trello.com by Chrome manifest
+  const res = /\/b\/(.*)\//.exec(window.location.pathname);
   const [, curTrelloBoardId] = res == null ? [] : res;
 
   return curTrelloBoardId;
+};
+
+type UserPref = {
+  enabled: boolean;
+  focusLists: string[];
 };
 
 /**
@@ -26,10 +31,7 @@ const getCurBoardId = (): string | undefined => {
  */
 const fetchUserPrefs = (
   curTrelloBoardId: string | undefined,
-): Promise<{
-  enabled: boolean;
-  focusLists: string[];
-}> => {
+): Promise<UserPref> => {
   if (!curTrelloBoardId) {
     return Promise.resolve({
       enabled: false,
@@ -174,43 +176,44 @@ const watchContent = (): void => {
   });
 };
 
+// Handle state changes
+const handleChromeStorageChange = changes => {
+  let focalists = [];
+  let enabled = false;
+  const curTrelloBoardId = getCurBoardId();
+
+  if (!(curTrelloBoardId in changes)) {
+    return resetTrelloBoard();
+  }
+
+  if ('newValue' in changes[curTrelloBoardId]) {
+    focalists = changes[curTrelloBoardId].newValue.focus;
+    enabled = changes[curTrelloBoardId].newValue.enabled;
+  } else if ('oldValue' in changes[curTrelloBoardId]) {
+    focalists = changes[curTrelloBoardId].oldValue.focus;
+    enabled = changes[curTrelloBoardId].oldValue.enabled;
+  }
+
+  if (enabled === false) {
+    return resetTrelloBoard();
+  }
+
+  Array.isArray(focalists) &&
+    focalists.length > 0 &&
+    updateTrelloBoard(focalists);
+};
+
 /**
  * Main entrypoint
  */
 (async function() {
-  // Handle state changes
-  chrome.storage.onChanged.addListener(function(changes) {
-    const curTrelloBoardId = getCurBoardId();
-
-    if (!(curTrelloBoardId in changes)) {
-      resetTrelloBoard();
-
-      return;
-    }
-
-    let focalists, enabled;
-    if ('newValue' in changes[curTrelloBoardId]) {
-      focalists = changes[curTrelloBoardId].newValue.focus;
-      enabled = changes[curTrelloBoardId].newValue.enabled;
-    } else if ('oldValue' in changes[curTrelloBoardId]) {
-      focalists = changes[curTrelloBoardId].oldValue.focus;
-      enabled = changes[curTrelloBoardId].oldValue.enabled;
-    }
-
-    if (enabled === false) {
-      resetTrelloBoard();
-
-      return;
-    }
-
-    Array.isArray(focalists) &&
-      focalists.length > 0 &&
-      updateTrelloBoard(focalists);
-  });
+  chrome.storage.onChanged.addListener(handleChromeStorageChange);
 
   watchContent();
 
+  // Inject required styling
   const link = document.createElement('link');
+
   link.href = focaliCss;
   document.head.appendChild(link);
 })();
